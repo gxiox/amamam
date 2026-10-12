@@ -788,4 +788,47 @@ do
             dragStart = input.Position
             startPos = Btn.Position
         end
-    e
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging
+            and (input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch) then
+
+            local d = input.Position - dragStart
+
+            if d.Magnitude > 8 then
+                moved = true
+            end
+
+            if moved then
+                Btn.Position = UDim2.new(
+                    startPos.X.Scale, startPos.X.Offset + d.X,
+                    startPos.Y.Scale, startPos.Y.Offset + d.Y
+                )
+            end
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if dragging
+            and (input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch) then
+
+            dragging = false
+
+            if not moved then
+                toggleUI()
+            end
+        end
+    end)
+end
+
+
+-- ==================================================
+-- เริ่มต้น: เปิด UI ไว้ ไม่ย่อเองหลังรัน
+-- ==================================================
+Window:SelectTab(1)
+setChStatus(settings.autoChallenge and "กำลังเริ่มระบบ..." or "ปิดอยู่")
+
+print("[Challenge Hub] โหลดเสร็จแล้ว - UI จะไม่ย่ออัตโนมัติ")
